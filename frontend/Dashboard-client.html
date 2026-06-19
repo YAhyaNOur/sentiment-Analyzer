@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SentimentAI — Client</title>
+    <style>
+        :root {
+            --bg: #080810;
+            --surface: #0f0f1a;
+            --surface2: #151525;
+            --border: #1f1f35;
+            --accent: #7c6af7;
+            --text: #eeeef8;
+            --muted: #6b6b90;
+            --success: #6af7c8;
+            --error: #f76a8a;
+            --warning: #f7c96a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 0 32px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .logo span {
+            color: var(--accent);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            padding: 6px 14px;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .user-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--success);
+        }
+
+        .btn-logout {
+            padding: 8px 16px;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--muted);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-logout:hover {
+            border-color: var(--error);
+            color: var(--error);
+        }
+
+        main {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 32px;
+        }
+
+        .page-title {
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 4px;
+        }
+
+        .page-sub {
+            color: var(--muted);
+            font-size: 14px;
+            margin-bottom: 32px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 24px;
+        }
+
+        .card-title {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Product list */
+        .product-item {
+            padding: 14px 16px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--bg);
+        }
+
+        .product-item:hover {
+            border-color: var(--accent);
+            background: rgba(124, 106, 247, 0.04);
+        }
+
+        .product-item.selected {
+            border-color: var(--accent);
+            background: rgba(124, 106, 247, 0.08);
+        }
+
+        .product-name {
+            font-weight: 700;
+            font-size: 14px;
+            margin-bottom: 3px;
+        }
+
+        .product-meta {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .product-price {
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        /* Form */
+        .selected-banner {
+            padding: 10px 14px;
+            background: rgba(124, 106, 247, 0.08);
+            border: 1px solid rgba(124, 106, 247, 0.2);
+            border-radius: 10px;
+            font-size: 13px;
+            margin-bottom: 16px;
+            color: var(--muted);
+        }
+
+        .selected-banner strong {
+            color: var(--accent);
+        }
+
+        textarea {
+            width: 100%;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px 16px;
+            color: var(--text);
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 14px;
+            outline: none;
+            resize: vertical;
+            min-height: 130px;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+            line-height: 1.6;
+        }
+
+        textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(124, 106, 247, 0.1);
+        }
+
+        textarea::placeholder {
+            color: var(--muted);
+        }
+
+        .char-count {
+            font-size: 11px;
+            color: var(--muted);
+            text-align: right;
+            margin-top: 4px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: var(--accent);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 14px;
+            letter-spacing: 0.3px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(124, 106, 247, 0.35);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Result */
+        .result-box {
+            margin-top: 16px;
+            padding: 16px;
+            border-radius: 12px;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-box.positif {
+            background: rgba(106, 247, 200, 0.06);
+            border: 1px solid rgba(106, 247, 200, 0.2);
+            display: block;
+        }
+
+        .result-box.neutre {
+            background: rgba(247, 201, 106, 0.06);
+            border: 1px solid rgba(247, 201, 106, 0.2);
+            display: block;
+        }
+
+        .result-box.negatif {
+            background: rgba(247, 106, 138, 0.06);
+            border: 1px solid rgba(247, 106, 138, 0.2);
+            display: block;
+        }
+
+        .result-top {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .result-emoji {
+            font-size: 24px;
+        }
+
+        .result-label {
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .result-score {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .keywords {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .kw {
+            padding: 4px 10px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        /* Mes avis */
+        .avis-item {
+            padding: 14px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 10px;
+            background: var(--bg);
+        }
+
+        .avis-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .avis-produit {
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        .avis-date {
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        .avis-texte {
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 3px 10px;
+            border-radius: 100px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .badge-positif {
+            background: rgba(106, 247, 200, 0.1);
+            color: var(--success);
+        }
+
+        .badge-neutre {
+            background: rgba(247, 201, 106, 0.1);
+            color: var(--warning);
+        }
+
+        .badge-negatif {
+            background: rgba(247, 106, 138, 0.1);
+            color: var(--error);
+        }
+
+        .scrollable {
+            max-height: 420px;
+            overflow-y: auto;
+        }
+
+        .scrollable::-webkit-scrollbar {
+            width: 3px;
+        }
+
+        .scrollable::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 2px;
+        }
+
+        .empty {
+            text-align: center;
+            color: var(--muted);
+            font-size: 13px;
+            padding: 40px 0;
+        }
+
+        .hint {
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="logo">Sentiment<span>AI</span></div>
+        <div class="header-right">
+            <div class="user-badge">
+                <div class="user-dot"></div>
+                <span id="userEmail">—</span>
+            </div>
+            <button class="btn-logout" onclick="logout()">Déconnexion</button>
+        </div>
+    </header>
+
+    <main>
+        <div class="page-title">🛒 Espace Client</div>
+        <div class="page-sub">Parcours les produits et partage ton expérience</div>
+
+        <div class="grid-2">
+
+            <!-- Produits -->
+            <div class="card">
+                <div class="card-title">📦 Produits disponibles</div>
+                <div class="scrollable" id="produits">
+                    <div class="empty">Chargement...</div>
+                </div>
+            </div>
+
+            <!-- Colonne droite -->
+            <div>
+                <!-- Formulaire avis -->
+                <div class="card" style="margin-bottom:24px">
+                    <div class="card-title">✍️ Laisser un avis</div>
+
+                    <div class="selected-banner" id="selectedBanner">
+                        👈 Sélectionne un produit pour laisser un avis
+                    </div>
+
+                    <div class="hint">Décris ton expérience en anglais pour une meilleure analyse IA</div>
+
+                    <textarea id="avisTexte" placeholder="Ex: Great product, fast delivery and excellent quality..."
+                        maxlength="1000" oninput="updateCount(this)">
+                </textarea>
+                    <div class="char-count"><span id="charCount">0</span> / 1000</div>
+
+                    <button class="btn-submit" id="btnSubmit" onclick="submitAvis()">
+                        Envoyer mon avis ✨
+                    </button>
+
+                    <div class="result-box" id="resultBox">
+                        <div class="result-top">
+                            <span class="result-emoji" id="resultEmoji"></span>
+                            <div>
+                                <div class="result-label" id="resultLabel"></div>
+                                <div class="result-score" id="resultScore"></div>
+                            </div>
+                        </div>
+                        <div class="keywords" id="resultKeywords"></div>
+                    </div>
+                </div>
+
+                <!-- Mes avis -->
+                <div class="card">
+                    <div class="card-title">📋 Mes avis</div>
+                    <div class="scrollable" id="mesAvis">
+                        <div class="empty">Aucun avis pour l'instant</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        const API = 'http://localhost:8082';
+        const token = localStorage.getItem('token');
+        const email = localStorage.getItem('email');
+        let selectedProduitId = null;
+        let selectedProduitNom = null;
+
+        document.getElementById('userEmail').textContent = email || '—';
+
+        function logout() { localStorage.clear(); window.location.href = 'login.html'; }
+
+        function updateCount(el) {
+            document.getElementById('charCount').textContent = el.value.length;
+        }
+
+        function selectProduit(id, nom) {
+            selectedProduitId = id;
+            selectedProduitNom = nom;
+            document.querySelectorAll('.product-item').forEach(el => {
+                el.classList.toggle('selected', el.dataset.id == id);
+            });
+            document.getElementById('selectedBanner').innerHTML =
+                `Produit sélectionné : <strong>${nom}</strong>`;
+            document.getElementById('resultBox').className = 'result-box';
+        }
+
+        async function loadProduits() {
+            try {
+                const res = await fetch(`${API}/api/produits`, {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const data = await res.json();
+                const container = document.getElementById('produits');
+                container.innerHTML = '';
+
+                if (!data.length) {
+                    container.innerHTML = '<div class="empty">Aucun produit disponible</div>';
+                    return;
+                }
+
+                data.forEach(p => {
+                    const div = document.createElement('div');
+                    div.className = 'product-item';
+                    div.dataset.id = p.id;
+                    div.onclick = () => selectProduit(p.id, p.nom);
+                    div.innerHTML = `
+                    <div class="product-name">${p.nom}</div>
+                    <div class="product-meta">
+                        ${p.categorie || 'Général'}
+                        ${p.prix ? `· <span class="product-price">${p.prix} TND</span>` : ''}
+                    </div>
+                `;
+                    container.appendChild(div);
+                });
+            } catch (e) {
+                document.getElementById('produits').innerHTML = '<div class="empty">Erreur chargement</div>';
+            }
+        }
+
+        async function submitAvis() {
+            if (!selectedProduitId) {
+                alert('Sélectionne un produit d\'abord !'); return;
+            }
+
+            const texte = document.getElementById('avisTexte').value.trim();
+            if (!texte || texte.length < 10) {
+                alert('Écris un avis d\'au moins 10 caractères !'); return;
+            }
+
+            const btn = document.getElementById('btnSubmit');
+            btn.disabled = true;
+            btn.textContent = 'Analyse en cours...';
+
+            try {
+                const res = await fetch(`${API}/api/avis/${selectedProduitId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify({ texte, note: 0 })
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    const s = data.sentiment;
+                    const box = document.getElementById('resultBox');
+                    box.className = 'result-box ' + (s === 'positif' ? 'positif' : s === 'négatif' ? 'negatif' : 'neutre');
+
+                    document.getElementById('resultEmoji').textContent =
+                        s === 'positif' ? '😊' : s === 'négatif' ? '😞' : '😐';
+                    document.getElementById('resultLabel').textContent =
+                        s.charAt(0).toUpperCase() + s.slice(1);
+                    document.getElementById('resultScore').textContent =
+                        `Confiance : ${(data.score * 100).toFixed(1)}%`;
+
+                    document.getElementById('resultKeywords').innerHTML =
+                        (data.keywords || []).map(k => `<span class="kw">${k}</span>`).join('');
+
+                    document.getElementById('avisTexte').value = '';
+                    document.getElementById('charCount').textContent = '0';
+                    loadMesAvis();
+                }
+            } catch (e) {
+                alert('Erreur lors de l\'envoi.');
+            }
+
+            btn.disabled = false;
+            btn.textContent = 'Envoyer mon avis ✨';
+        }
+
+        async function loadMesAvis() {
+            try {
+                const res = await fetch(`${API}/api/avis/mes`, {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const data = await res.json();
+                const container = document.getElementById('mesAvis');
+                container.innerHTML = '';
+
+                if (!data.length) {
+                    container.innerHTML = '<div class="empty">Aucun avis pour l\'instant</div>';
+                    return;
+                }
+
+                data.forEach(a => {
+                    const s = a.analyse?.sentiment || 'neutre';
+                    const badgeClass = s === 'positif' ? 'badge-positif' : s === 'négatif' ? 'badge-negatif' : 'badge-neutre';
+                    const div = document.createElement('div');
+                    div.className = 'avis-item';
+                    div.innerHTML = `
+                    <div class="avis-top">
+                        <div class="avis-produit">📦 ${a.produitNom || 'Produit'}</div>
+                        <div class="avis-date">${a.createdAt ? new Date(a.createdAt).toLocaleDateString('fr-FR') : ''}</div>
+                    </div>
+                    <div class="avis-texte">${a.texte}</div>
+                    <span class="badge ${badgeClass}">${s}</span>
+                `;
+                    container.appendChild(div);
+                });
+            } catch (e) { }
+        }
+
+        loadProduits();
+        loadMesAvis();
+    </script>
+</body>
+
+</html>
