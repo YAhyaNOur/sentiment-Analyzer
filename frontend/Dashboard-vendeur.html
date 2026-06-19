@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SentimentAI — Vendeur</title>
+    <style>
+        :root {
+            --bg: #080810;
+            --surface: #0f0f1a;
+            --surface2: #151525;
+            --border: #1f1f35;
+            --accent: #7c6af7;
+            --text: #eeeef8;
+            --muted: #6b6b90;
+            --success: #6af7c8;
+            --error: #f76a8a;
+            --warning: #f7c96a;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+        header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 0 32px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
+        .logo span { color: var(--accent); }
+        .logo-role { font-size: 12px; color: var(--muted); font-weight: 400; margin-left: 8px; }
+
+        .header-right { display: flex; align-items: center; gap: 12px; }
+
+        .notif-btn {
+            position: relative;
+            padding: 8px 14px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .notif-btn:hover { border-color: var(--accent); }
+
+        .notif-badge {
+            position: absolute;
+            top: -6px; right: -6px;
+            background: var(--error);
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            width: 18px; height: 18px;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            padding: 6px 14px;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .user-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+        .btn-logout {
+            padding: 8px 16px;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--muted);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-logout:hover { border-color: var(--error); color: var(--error); }
+
+        /* Layout */
+        .layout { display: flex; min-height: calc(100vh - 64px); }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            padding: 24px;
+            flex-shrink: 0;
+        }
+
+        .sidebar-title { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; }
+
+        /* Product form */
+        .form-group { margin-bottom: 10px; }
+
+        label { display: block; font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 5px; }
+
+        input, textarea {
+            width: 100%;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 9px 12px;
+            color: var(--text);
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 13px;
+            outline: none;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+        }
+
+        input:focus, textarea:focus { border-color: var(--accent); }
+        input::placeholder, textarea::placeholder { color: var(--muted); }
+        textarea { resize: vertical; min-height: 70px; }
+
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+        .btn-create {
+            width: 100%;
+            padding: 10px;
+            background: var(--accent);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 6px;
+        }
+
+        .btn-create:hover { opacity: 0.9; }
+
+        .divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+
+        /* Product list sidebar */
+        .prod-item {
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--bg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .prod-item:hover { border-color: var(--accent); }
+        .prod-item.active { border-color: var(--accent); background: rgba(124,106,247,0.08); }
+
+        .prod-name { font-weight: 700; font-size: 13px; margin-bottom: 2px; }
+        .prod-meta { font-size: 11px; color: var(--muted); }
+
+        .btn-del {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            opacity: 0.4;
+            transition: opacity 0.2s;
+            padding: 4px;
+        }
+
+        .btn-del:hover { opacity: 1; }
+
+        .msg-small { font-size: 12px; margin-top: 6px; }
+        .msg-ok { color: var(--success); }
+        .msg-err { color: var(--error); }
+
+        /* Main content */
+        .content { flex: 1; padding: 28px 32px; overflow-y: auto; }
+
+        /* No selection state */
+        .no-selection {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 400px;
+            color: var(--muted);
+            text-align: center;
+        }
+
+        .no-selection-icon { font-size: 48px; margin-bottom: 16px; }
+        .no-selection h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; color: var(--text); }
+        .no-selection p { font-size: 14px; }
+
+        /* Dashboard header */
+        .dash-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .dash-title { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+        .dash-sub { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+        /* Stats cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .stat-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+
+        .stat-value { font-size: 36px; font-weight: 800; letter-spacing: -1px; line-height: 1; }
+
+        .stat-sub { font-size: 12px; color: var(--muted); margin-top: 6px; }
+
+        .stat-total .stat-value { color: var(--text); }
+        .stat-pos .stat-value { color: var(--success); }
+        .stat-neu .stat-value { color: var(--warning); }
+        .stat-neg .stat-value { color: var(--error); }
+
+        /* Progress bars for percentages */
+        .stat-bar { margin-top: 8px; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+        .stat-bar-fill { height: 100%; border-radius: 2px; transition: width 0.6s ease; }
+
+        /* Bottom grid */
+        .bottom-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 22px;
+        }
+
+        .card-title { font-size: 14px; font-weight: 700; margin-bottom: 18px; color: var(--text); }
+
+        /* Donut */
+        .donut-container { display: flex; align-items: center; gap: 24px; }
+        .donut-legend { flex: 1; }
+
+        .legend-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .legend-row:last-child { border-bottom: none; }
+
+        .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+        .legend-label { font-size: 13px; flex: 1; }
+        .legend-pct { font-size: 18px; font-weight: 800; }
+        .legend-count { font-size: 11px; color: var(--muted); }
+
+        /* Keywords */
+        .kw-row { margin-bottom: 12px; }
+        .kw-top { display: flex; justify-content: space-between; margin-bottom: 5px; }
+        .kw-word { font-size: 13px; font-weight: 600; }
+        .kw-info { font-size: 11px; color: var(--muted); }
+        .kw-track { height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
+        .kw-fill { height: 100%; border-radius: 3px; background: var(--accent); transition: width 0.6s ease; }
+
+        /* Notifications panel */
+        .notif-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 200;
+            display: none;
+        }
+
+        .notif-panel {
+            position: fixed;
+            top: 0; right: 0;
+            width: 380px;
+            height: 100vh;
+            background: var(--surface);
+            border-left: 1px solid var(--border);
+            padding: 28px;
+            z-index: 201;
+            overflow-y: auto;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .notif-overlay.open { display: block; }
+        .notif-panel.open { transform: translateX(0); }
+
+        .notif-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .notif-header h3 { font-size: 18px; font-weight: 800; }
+
+        .btn-close {
+            background: none;
+            border: none;
+            color: var(--muted);
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .notif-actions { display: flex; gap: 8px; margin-bottom: 16px; }
+
+        .btn-sm {
+            padding: 6px 12px;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--muted);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-sm:hover { border-color: var(--accent); color: var(--accent); }
+
+        .notif-item {
+            padding: 14px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 10px;
+            background: var(--bg);
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .notif-item.unread { border-color: rgba(247,106,138,0.3); background: rgba(247,106,138,0.04); }
+        .notif-time { font-size: 11px; color: var(--muted); margin-top: 6px; }
+
+        .empty { text-align: center; color: var(--muted); font-size: 13px; padding: 30px 0; }
+        .scrollable { overflow-y: auto; }
+        .scrollable::-webkit-scrollbar { width: 3px; }
+        .scrollable::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">
+        Sentiment<span>AI</span>
+        <span class="logo-role">— Tableau de bord Vendeur</span>
+    </div>
+    <div class="header-right">
+        <button class="notif-btn" onclick="openNotif()">
+            🔔 Alertes
+            <div class="notif-badge" id="notifBadge">0</div>
+        </button>
+        <div class="user-badge">
+            <div class="user-dot"></div>
+            <span id="userEmail">—</span>
+        </div>
+        <button class="btn-logout" onclick="logout()">Déconnexion</button>
+    </div>
+</header>
+
+<!-- Notifications overlay -->
+<div class="notif-overlay" id="notifOverlay" onclick="closeNotif()"></div>
+<div class="notif-panel" id="notifPanel">
+    <div class="notif-header">
+        <h3>🔔 Alertes négatives</h3>
+        <button class="btn-close" onclick="closeNotif()">✕</button>
+    </div>
+    <div class="notif-actions">
+        <button class="btn-sm" onclick="marquerToutLu()">✓ Tout marquer lu</button>
+    </div>
+    <div id="notifList"><div class="empty">Aucune alerte</div></div>
+</div>
+
+<div class="layout">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-title">➕ Nouveau produit</div>
+
+        <div class="form-group">
+            <label>Nom</label>
+            <input id="pNom" placeholder="Ex: Café Bio 250g">
+        </div>
+        <div class="form-group">
+            <label>Description</label>
+            <textarea id="pDesc" placeholder="Description..."></textarea>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Prix</label>
+                <input id="pPrix" type="number" placeholder="12.5">
+            </div>
+            <div class="form-group">
+                <label>Catégorie</label>
+                <input id="pCat" placeholder="Alimentaire">
+            </div>
+        </div>
+        <button class="btn-create" onclick="createProduit()">Créer le produit</button>
+        <div id="createMsg" class="msg-small"></div>
+
+        <hr class="divider">
+
+        <div class="sidebar-title">📦 Mes produits</div>
+        <div id="mesProduits">
+            <div class="empty">Aucun produit</div>
+        </div>
+    </div>
+
+    <!-- Main content -->
+    <div class="content" id="mainContent">
+        <div class="no-selection">
+            <div class="no-selection-icon">📊</div>
+            <h3>Sélectionne un produit</h3>
+            <p>Clique sur un produit dans la liste pour voir<br>l'analyse complète des avis clients</p>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const API = 'http://localhost:8082';
+    const token = localStorage.getItem('token');
+    const email = localStorage.getItem('email');
+    let selectedProduitId = null;
+    let selectedProduitNom = null;
+
+    document.getElementById('userEmail').textContent = email || '—';
+
+    function logout() { localStorage.clear(); window.location.href = 'login.html'; }
+
+    // ─── NOTIFICATIONS ───────────────────────────────────────
+    function openNotif() {
+        document.getElementById('notifOverlay').classList.add('open');
+        document.getElementById('notifPanel').classList.add('open');
+        loadNotifications();
+    }
+
+    function closeNotif() {
+        document.getElementById('notifOverlay').classList.remove('open');
+        document.getElementById('notifPanel').classList.remove('open');
+    }
+
+    async function loadNotifCount() {
+        try {
+            const res = await fetch(`${API}/api/notifications/nonlues`, {
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            const data = await res.json();
+            const count = data.count || 0;
+            const badge = document.getElementById('notifBadge');
+            badge.textContent = count;
+            badge.style.display = count > 0 ? 'flex' : 'none';
+        } catch(e) {}
+    }
+
+    async function loadNotifications() {
+        try {
+            const res = await fetch(`${API}/api/notifications`, {
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            const data = await res.json();
+            const container = document.getElementById('notifList');
+            container.innerHTML = '';
+
+            if (!data.length) {
+                container.innerHTML = '<div class="empty">Aucune alerte négative</div>';
+                return;
+            }
+
+            data.forEach(n => {
+                const div = document.createElement('div');
+                div.className = 'notif-item' + (!n.lu ? ' unread' : '');
+                div.innerHTML = `
+                    <div>${n.message}</div>
+                    <div class="notif-time">${n.createdAt ? new Date(n.createdAt).toLocaleString('fr-FR') : ''}</div>
+                `;
+                container.appendChild(div);
+            });
+        } catch(e) {}
+    }
+
+    async function marquerToutLu() {
+        await fetch(`${API}/api/notifications/toutlu`, {
+            method: 'PUT',
+            headers: { 'Authorization': 'Bearer ' + token }
+        });
+        loadNotifCount();
+        loadNotifications();
+    }
+
+    // ─── PRODUITS ────────────────────────────────────────────
+    async function createProduit() {
+        const nom = document.getElementById('pNom').value.trim();
+        const desc = document.getElementById('pDesc').value.trim();
+        const prix = document.getElementById('pPrix').value;
+        const cat = document.getElementById('pCat').value.trim();
+        const msgEl = document.getElementById('createMsg');
+
+        if (!nom || !desc) {
+            msgEl.textContent = '❌ Nom et description requis';
+            msgEl.className = 'msg-small msg-err';
+            return;
+        }
+
+        const res = await fetch(`${API}/api/produits`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+            body: JSON.stringify({ nom, description: desc, prix, categorie: cat })
+        });
+
+        if (res.ok) {
+            msgEl.textContent = '✅ Produit créé !';
+            msgEl.className = 'msg-small msg-ok';
+            document.getElementById('pNom').value = '';
+            document.getElementById('pDesc').value = '';
+            document.getElementById('pPrix').value = '';
+            document.getElementById('pCat').value = '';
+            loadMesProduits();
+            setTimeout(() => msgEl.textContent = '', 3000);
+        } else {
+            msgEl.textContent = '❌ Erreur création';
+            msgEl.className = 'msg-small msg-err';
+        }
+    }
+
+    async function loadMesProduits() {
+        try {
+            const res = await fetch(`${API}/api/produits/mes`, {
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            const data = await res.json();
+            const container = document.getElementById('mesProduits');
+            container.innerHTML = '';
+
+            if (!data.length) {
+                container.innerHTML = '<div class="empty">Aucun produit</div>';
+                return;
+            }
+
+            data.forEach(p => {
+                const div = document.createElement('div');
+                div.className = 'prod-item' + (p.id === selectedProduitId ? ' active' : '');
+                div.innerHTML = `
+                    <div onclick="selectProduit(${p.id}, '${p.nom.replace(/'/g, "\\'")}')">
+                        <div class="prod-name">${p.nom}</div>
+                        <div class="prod-meta">${p.categorie || '—'} ${p.prix ? '· ' + p.prix + ' TND' : ''}</div>
+                    </div>
+                    <button class="btn-del" onclick="deleteProduit(${p.id}, event)">🗑</button>
+                `;
+                container.appendChild(div);
+            });
+        } catch(e) {}
+    }
+
+    async function deleteProduit(id, e) {
+        e.stopPropagation();
+        if (!confirm('Supprimer ce produit ?')) return;
+        await fetch(`${API}/api/produits/${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': 'Bearer ' + token }
+        });
+        if (selectedProduitId === id) {
+            selectedProduitId = null;
+            document.getElementById('mainContent').innerHTML = `
+                <div class="no-selection">
+                    <div class="no-selection-icon">📊</div>
+                    <h3>Sélectionne un produit</h3>
+                    <p>Clique sur un produit dans la liste pour voir<br>l'analyse complète des avis clients</p>
+                </div>`;
+        }
+        loadMesProduits();
+    }
+
+    async function selectProduit(id, nom) {
+        selectedProduitId = id;
+        selectedProduitNom = nom;
+        loadMesProduits();
+
+        // Show loading
+        document.getElementById('mainContent').innerHTML = `<div class="no-selection"><div class="no-selection-icon">⏳</div><h3>Chargement...</h3></div>`;
+
+        try {
+            const res = await fetch(`${API}/api/analyses/stats/${id}`, {
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            const d = await res.json();
+            renderDashboard(nom, d);
+        } catch(e) {
+            document.getElementById('mainContent').innerHTML = `<div class="no-selection"><div class="no-selection-icon">❌</div><h3>Erreur chargement</h3></div>`;
+        }
+    }
+
+    function renderDashboard(nom, d) {
+        const total   = d.total || 0;
+        const pos     = d.positif || 0;
+        const neu     = d.neutre || 0;
+        const neg     = d.negatif || 0;
+        const pctPos  = d.pctPositif || 0;
+        const pctNeu  = d.pctNeutre  || 0;
+        const pctNeg  = d.pctNegatif || 0;
+        const keywords = d.keywords || [];
+
+        // Donut SVG
+        const r = 55, cx = 65, cy = 65, sw = 16;
+        const circ = 2 * Math.PI * r;
+        function seg(pct, off, color) {
+            const dash = (pct/100)*circ;
+            const offset = -(off/100)*circ;
+            return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${color}" stroke-width="${sw}"
+                stroke-dasharray="${dash} ${circ}" stroke-dashoffset="${offset}"
+                transform="rotate(-90 ${cx} ${cy})"/>`;
+        }
+
+        const donutSVG = total === 0 ? `
+            <svg width="130" height="130" viewBox="0 0 130 130">
+                <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--border)" stroke-width="${sw}"/>
+                <text x="${cx}" y="${cy+5}" text-anchor="middle" fill="var(--muted)" font-size="12">Aucun avis</text>
+            </svg>` : `
+            <svg width="130" height="130" viewBox="0 0 130 130">
+                <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--border)" stroke-width="${sw}"/>
+                ${seg(pctPos, 0, 'var(--success)')}
+                ${seg(pctNeu, pctPos, 'var(--warning)')}
+                ${seg(pctNeg, pctPos+pctNeu, 'var(--error)')}
+                <text x="${cx}" y="${cy-6}" text-anchor="middle" fill="var(--text)" font-size="20" font-weight="800">${pctPos}%</text>
+                <text x="${cx}" y="${cy+12}" text-anchor="middle" fill="var(--muted)" font-size="10">positifs</text>
+            </svg>`;
+
+        // Keywords bars
+        const kwHTML = keywords.length === 0
+            ? '<div class="empty">Aucun keyword détecté</div>'
+            : keywords.slice(0, 8).map(k => `
+                <div class="kw-row">
+                    <div class="kw-top">
+                        <span class="kw-word">${k.word}</span>
+                        <span class="kw-info">${k.count}× · ${k.percent}%</span>
+                    </div>
+                    <div class="kw-track">
+                        <div class="kw-fill" style="width:${k.percent}%"></div>
+                    </div>
+                </div>`).join('');
+
+        document.getElementById('mainContent').innerHTML = `
+            <div class="dash-header">
+                <div>
+                    <div class="dash-title">📦 ${nom}</div>
+                    <div class="dash-sub">Analyse basée sur ${total} avis clients</div>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card stat-total">
+                    <div class="stat-label">Total avis</div>
+                    <div class="stat-value">${total}</div>
+                    <div class="stat-sub">avis analysés par l'IA</div>
+                </div>
+                <div class="stat-card stat-pos">
+                    <div class="stat-label">Avis positifs</div>
+                    <div class="stat-value">${pos}</div>
+                    <div class="stat-sub">${pctPos}% du total</div>
+                    <div class="stat-bar"><div class="stat-bar-fill" style="width:${pctPos}%;background:var(--success)"></div></div>
+                </div>
+                <div class="stat-card stat-neu">
+                    <div class="stat-label">Avis neutres</div>
+                    <div class="stat-value">${neu}</div>
+                    <div class="stat-sub">${pctNeu}% du total</div>
+                    <div class="stat-bar"><div class="stat-bar-fill" style="width:${pctNeu}%;background:var(--warning)"></div></div>
+                </div>
+                <div class="stat-card stat-neg">
+                    <div class="stat-label">Avis négatifs</div>
+                    <div class="stat-value">${neg}</div>
+                    <div class="stat-sub">${pctNeg}% du total</div>
+                    <div class="stat-bar"><div class="stat-bar-fill" style="width:${pctNeg}%;background:var(--error)"></div></div>
+                </div>
+            </div>
+
+            <div class="bottom-grid">
+                <div class="card">
+                    <div class="card-title">📊 Répartition des sentiments</div>
+                    <div class="donut-container">
+                        ${donutSVG}
+                        <div class="donut-legend">
+                            <div class="legend-row">
+                                <div class="legend-dot" style="background:var(--success)"></div>
+                                <div class="legend-label">Positifs</div>
+                                <div>
+                                    <div class="legend-pct" style="color:var(--success)">${pctPos}%</div>
+                                    <div class="legend-count">${pos} avis</div>
+                                </div>
+                            </div>
+                            <div class="legend-row">
+                                <div class="legend-dot" style="background:var(--warning)"></div>
+                                <div class="legend-label">Neutres</div>
+                                <div>
+                                    <div class="legend-pct" style="color:var(--warning)">${pctNeu}%</div>
+                                    <div class="legend-count">${neu} avis</div>
+                                </div>
+                            </div>
+                            <div class="legend-row">
+                                <div class="legend-dot" style="background:var(--error)"></div>
+                                <div class="legend-label">Négatifs</div>
+                                <div>
+                                    <div class="legend-pct" style="color:var(--error)">${pctNeg}%</div>
+                                    <div class="legend-count">${neg} avis</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">🔑 Sujets les plus mentionnés</div>
+                    ${kwHTML}
+                </div>
+            </div>
+        `;
+    }
+
+    // ─── INIT ─────────────────────────────────────────────────
+    loadMesProduits();
+    loadNotifCount();
+    setInterval(loadNotifCount, 30000);
+</script>
+</body>
+</html>
