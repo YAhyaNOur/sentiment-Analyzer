@@ -1,3 +1,4 @@
+app/data/*.csv
 saved_models/*.pkl
 __pycache__/
 .env
