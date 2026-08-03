@@ -26,41 +26,44 @@ Le projet est composé de trois parties principales :
   - Page de connexion
 
 
-##  Structure du projet
+## 📂 Structure du projet
 
-
+```
 Sentiment-E-commerce-Analyzer/
 │
-├── app/
-│ ├── core/
-│ ├── data/
-│ │ └── Reviews.csv
-│ ├── training.py
-│ ├── models/
-│ ├── preprocessing/
-│ ├── schemas/
-│ ├── services/
-│ ├── saved_models/
-│ │ ├── sentiment_model.pkl
-│ │ └── vectorizer.pkl
-│ └── main.py
+├── app/                         # Service Python (Machine Learning / NLP)
+│   ├── core/
+│   ├── data/
+│   │   └── Reviews.csv
+│   ├── training.py
+│   ├── models/
+│   ├── preprocessing/
+│   ├── schemas/
+│   ├── services/
+│   ├── saved_models/
+│   │   ├── sentiment_model.pkl
+│   │   └── vectorizer.pkl
+│   └── main.py
 │
-├── frontend/
-│ ├── Dashboard-client.html
-│ ├── Dashboard-vendeur.html
-│ └── login.html
+├── frontend/                    # Interface utilisateur HTML
+│   ├── Dashboard-client.html
+│   ├── Dashboard-vendeur.html
+│   └── login.html
 │
-└── Analyzer/
-└── src/
-└── main/
-└── java/
-└── com/example/demo/
-├── config/
-├── controller/
-├── entity/
-├── repository/
-├── security/
-└── service/
+└── Analyzer/                    # Backend Spring Boot
+    └── src/
+        └── main/
+            └── java/
+                └── com/
+                    └── example/
+                        └── demo/
+                            ├── config/
+                            ├── controller/
+                            ├── entity/
+                            ├── repository/
+                            ├── security/
+                            └── service/
+```
 
 
 ---
