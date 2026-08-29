@@ -1,37 +1,39 @@
 # Sentiment E-commerce Analyzer
 
-Application d'analyse de sentiment pour les avis clients e-commerce, combinant un moteur de **Machine Learning (Python/NLP)** et une **API métier Spring Boot**, avec des dashboards dédiés aux clients et vendeurs.
+A sentiment analysis platform for e-commerce customer reviews, combining a **Machine Learning (Python/NLP) engine** with a **Spring Boot business API**, and dedicated dashboards for customers and sellers.
 
 ---
 
-##  Architecture
+## Table of Contents
 
-Le projet est composé de trois parties principales :
+- [Architecture](#architecture)
+- [Project Structure](#project-structure)
+- [Machine Learning](#machine-learning)
+- [Technologies Used](#technologies-used)
+- [Features](#features)
+- [Security](#security)
+- [Author](#author)
 
-- **`app/`** — Service Python (Machine Learning / NLP) :
-  - Prétraitement des avis clients
-  - Entraînement du modèle de classification
-  - Exposition de l'API d'analyse de sentiment avec FastAPI
-  - Utilisation des modèles sauvegardés (`sentiment_model.pkl` et `vectorizer.pkl`)
+---
 
-- **`Analyzer/`** — Backend Spring Boot :
-  - Gestion des utilisateurs
-  - Gestion des produits et avis
-  - Stockage des résultats d'analyse
-  - Authentification JWT et sécurité
+## Architecture
 
-- **`frontend/`** — Interface utilisateur :
-  - Dashboard client
-  - Dashboard vendeur
-  - Page de connexion
+The project consists of three main components:
 
+| Component | Description |
+|---|---|
+| **`app/`** | Python service (Machine Learning / NLP) — review preprocessing, model training, sentiment analysis API exposed via FastAPI, and inference using the saved models (`sentiment_model.pkl`, `vectorizer.pkl`). |
+| **`Analyzer/`** | Spring Boot backend — user management, product and review management, storage of analysis results, JWT authentication and security. |
+| **`frontend/`** | User interface — customer dashboard, seller dashboard, login page. |
 
-## 📂 Structure du projet
+---
+
+## Project Structure
 
 ```
 Sentiment-E-commerce-Analyzer/
 │
-├── app/                         # Service Python (Machine Learning / NLP)
+├── app/                         # Python service (Machine Learning / NLP)
 │   ├── core/
 │   ├── data/
 │   │   └── Reviews.csv
@@ -45,12 +47,12 @@ Sentiment-E-commerce-Analyzer/
 │   │   └── vectorizer.pkl
 │   └── main.py
 │
-├── frontend/                    # Interface utilisateur HTML
+├── frontend/                    # HTML user interface
 │   ├── Dashboard-client.html
 │   ├── Dashboard-vendeur.html
 │   └── login.html
 │
-└── Analyzer/                    # Backend Spring Boot
+└── Analyzer/                    # Spring Boot backend
     └── src/
         └── main/
             └── java/
@@ -65,12 +67,11 @@ Sentiment-E-commerce-Analyzer/
                             └── service/
 ```
 
-
 ---
 
-##  Machine Learning
+## Machine Learning
 
-Le service IA utilise :
+The AI service is built with:
 
 - Python
 - FastAPI
@@ -78,79 +79,77 @@ Le service IA utilise :
 - Scikit-learn
 - TF-IDF Vectorization
 
-Pipeline d'analyse :
+**Analysis pipeline:**
 
+```
+Customer review
+      ↓
+Text preprocessing
+      ↓
+TF-IDF vectorization
+      ↓
+Machine Learning model
+      ↓
+Sentiment classification
+```
 
-Avis client
-↓
-Prétraitement du texte
-↓
-Vectorisation TF-IDF
-↓
-Modèle Machine Learning
-↓
-Classification du sentiment
+**Output classes:**
 
-
-Résultat :
-
-- Positive 😊
-- Neutral 😐
-- Negative 😡
-
+| Class | Label |
+|---|---|
+| 😊 | Positive |
+| 😐 | Neutral |
+| 😡 | Negative |
 
 ---
 
-## ⚙️ Technologies utilisées
+## Technologies Used
 
-### AI Service
+**AI Service**
 - Python
 - FastAPI
 - Scikit-learn
 - NLP
 
-### Backend
+**Backend**
 - Java
 - Spring Boot
 - Spring Security
 - JWT
 - Gradle
 
-### Frontend
+**Frontend**
 - HTML
 - CSS
 - JavaScript
 
+---
+
+## Features
+
+**Customer**
+- Browse products
+- Submit reviews
+- Receive automatic sentiment analysis
+
+**Seller**
+- View customer feedback
+- Visualize sentiment analytics
+- Track customer satisfaction over time
 
 ---
 
-## Fonctionnalités
+## Security
 
-### Client
-- Consulter les produits
-- Ajouter des avis
-- Obtenir l'analyse automatique du sentiment
+The backend implements:
 
-### Vendeur
-- Consulter les retours clients
-- Visualiser les analyses
-- Suivre la satisfaction client
-
-
----
-
-##  Sécurité
-
-Le backend utilise :
-
-- Authentification JWT
+- JWT-based authentication
 - Spring Security
-- Gestion des utilisateurs et rôles
-
+- User and role management
 
 ---
 
-##  Auteur
+## Author
 
-**Nour Yahya**  
+**Nour Yahya**
 Data Science & Artificial Intelligence Engineering Student
